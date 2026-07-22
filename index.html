@@ -330,7 +330,6 @@
     .container { padding: 14px; }
   }
 </style>
-<script>window.__PUBLIC_DATA_URL__ = "https://jsonblob.com/api/jsonBlob/019f8925-69f7-7325-9d86-563f12236dcd";</script>
 </head>
 <body>
 
@@ -482,19 +481,9 @@ let chartData = [];     // 当前展示窗口（近30日）
 let chartRatioInst, chartPctInst, chartAmtInst;
 const DISPLAY_DAYS = 30;
 
-// 纯静态页：优先拉取公网实时数据（jsonblob，带 CORS），失败回退内联 FALLBACK_DATA
+// 纯静态页：直接用内联 FALLBACK_DATA（每日由 refresh.mjs 注入当日最新全量数据，git push 到 GitHub Pages 即可）
 async function loadData() {
-  let data = FALLBACK_DATA;
-  if (window.__PUBLIC_DATA_URL__) {
-    try {
-      const res = await fetch(window.__PUBLIC_DATA_URL__, { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const j = await res.json();
-      if (Array.isArray(j) && j.length) data = j;
-    } catch (e) {
-      console.warn('[loadData] 公网实时数据拉取失败，回退内联数据：', e.message);
-    }
-  }
+  const data = FALLBACK_DATA;
   fullData = [...data];
   const last = fullData[fullData.length - 1];
   document.getElementById('lastUpdate').textContent =
